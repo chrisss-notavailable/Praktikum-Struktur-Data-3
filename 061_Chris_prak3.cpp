@@ -60,6 +60,7 @@ void montir();
 void menuServis();
 void menuAdmin();
 void masukServis(servis* baru);
+
 void batalkanServis(string nama,long long no);
 void undoPembatalan();
 void menuCustomer(string nama,long long no);
@@ -88,13 +89,13 @@ servis* topCancel = NULL;
 
 // FUNNGSI DASAR 
 
-// PUSH STACK PEMBATALAN
+// PUSH STACK PEMBATALAN - tambah
 void pushCancel(servis* data){
     data->next = topCancel;
     topCancel = data;
 }
 
-// POP STACK PEMBATALAN
+// POP STACK PEMBATALAN - ambil 
 servis* popCancel(){
 
     if(topCancel == NULL)
@@ -120,7 +121,7 @@ void batalkanServis(string nama,long long no){
 
     while(scanner != NULL){
 
-        if(toLowerCase(scanner->namac) == toLowerCase(nama) && scanner->noc == no){
+        if(toLowerCase(scanner->namac) == toLowerCase(nama) || scanner->noc == no){
 
             cout << jumlah+1 << ". ";
             cout << scanner->model << " - " << scanner->kendala << endl;
@@ -181,10 +182,7 @@ void batalkanServis(string nama,long long no){
 // UNDO PEMBATALAN
 void undoPembatalan(){
 
-    servis* data = popCancel();
-
-    if(data == NULL){
-
+    if(topCancel == NULL){
         cout << "Tidak ada pembatalan servis\n";
         system("pause");
         return;
@@ -192,10 +190,55 @@ void undoPembatalan(){
 
     cout << "\n====== Booking Kembali Service ======\n";
 
-    cout << "Model Mobil: " << data->model << endl;
-    cout << "Merek Mobil: " << data->merek << endl;
-    cout << "Kendala: " << data->kendala << endl;
-    cout << "Montir: " << data->montir << endl;
+    servis* daftar[100];
+    int jumlah = 0;
+
+    servis* scan = topCancel;
+
+    while(scan != NULL){
+        cout << jumlah+1 << ". "
+            << scan->model << " | "
+            << scan->merek << " | "
+            << scan->kendala << " | "
+            << scan->montir << endl;
+
+        daftar[jumlah] = scan;
+        jumlah++;
+
+        scan = scan->next;
+    }
+
+    int pilih;
+    cout << "\nPilih servis yang ingin dibooking kembali: ";
+    cin >> pilih;
+
+    if(pilih < 1 || pilih > jumlah){
+        cout << "Pilihan tidak valid\n";
+        system("pause");
+        return;
+    }
+
+    servis* target = daftar[pilih-1];
+
+    // Hapus dari stack
+    servis* prev = NULL;
+    scan = topCancel;
+
+    while(scan != NULL){
+
+        if(scan == target)
+            break;
+
+        prev = scan;
+        scan = scan->next;
+    }
+
+    if(prev == NULL)
+        topCancel = target->next;
+    else
+        prev->next = target->next;
+
+    target->next = NULL;
 
     string jawab;
 
@@ -206,22 +249,20 @@ void undoPembatalan(){
 
         string tanggalBaru;
 
-        cout << "Tanggal Lama: " << data->masuk << endl;
+        cout << "Tanggal Lama: " << target->masuk << endl;
         cout << "Tanggal Baru (- jika tidak): ";
         cin >> tanggalBaru;
 
-        if(tanggalBaru != "-"){
-            data->masuk = tanggalBaru;
-        }
+        if(tanggalBaru != "-")
+            target->masuk = tanggalBaru;
 
-        data->next = NULL;
+        masukServis(target);
 
-        masukServis(data);
-
-        cout << "Servis " << data->model << " telah dibooking kembali\n";
+        cout << "Servis berhasil dibooking kembali\n";
 
         simpanServis();
     }
+
     simpanStack();
 
     system("pause");
@@ -399,7 +440,7 @@ void loadStack(){
         getline(ss,kendala,'|');
         getline(ss,montir,'|');
         getline(ss,namac,'|');
-        getline(ss,noStr,'|');
+        getline(ss,noStr);
 
         servis* baru = new servis;
 
