@@ -10,9 +10,6 @@ string toLowerCase(string str){
     return str;
 }
 
-// alurnya :
-// Input - lingkedlist - queue - file
-// file - lingkedlist - output
 
 // STRUCT PROGRAM
 
@@ -82,10 +79,10 @@ cust* headCust = NULL;
 servis* frontServis = NULL ;
 servis* rearServis = NULL;
 servis* selesaiServis = NULL;
-Datamontir* headMontir = NULL;
+Datamontir* headMontir = NULL; 
 
 // STACK PEMBATALAN SERVIS
-servis* topCancel = NULL;
+servis* topCancel = NULL; // LIFO
 
 // FUNNGSI DASAR 
 
@@ -213,7 +210,6 @@ void undoPembatalan(){
     cin >> pilih;
 
     if(pilih < 1 || pilih > jumlah){
-        cout << "Pilihan tidak valid\n";
         system("pause");
         return;
     }
@@ -479,8 +475,7 @@ void bookingServisCustomer(string nama, long long no) {
     cout << "Tanggal Masuk Bengkel: ";
     getline(cin, masuk);
 
-    // CEK apakah mobil sudah ada di antrian
-    // Pointer scanner telah diubah menjadi cari
+    // NYARI MOBILL
     servis* cari = frontServis; 
     servis* servisLama = NULL;
 
@@ -488,9 +483,7 @@ void bookingServisCustomer(string nama, long long no) {
     int nomorAntrian = -1;
 
     while (cari != NULL) {
-        if (toLowerCase(cari->namac) == toLowerCase(nama) &&
-            toLowerCase(cari->model) == toLowerCase(model) &&
-            toLowerCase(cari->merek) == toLowerCase(merek)) {
+        if (toLowerCase(cari->namac) == toLowerCase(nama) && toLowerCase(cari->model) == toLowerCase(model) && toLowerCase(cari->merek) == toLowerCase(merek)) {
 
             servisLama = cari;
             nomorAntrian = nomor;
@@ -526,15 +519,15 @@ void bookingServisCustomer(string nama, long long no) {
     cin >> pilih;
     cin.ignore();
 
-    Datamontir* m = headMontir;
+    Datamontir* mntr = headMontir;
     int i = 1;
 
-    while (m != NULL) {
+    while (mntr != NULL) {
         if (i == pilih) {
-            montir = m->nama;
+            montir = mntr ->nama;
             break;
         }
-        m = m->next;
+        mntr = mntr ->next;
         i++;
     }
 
